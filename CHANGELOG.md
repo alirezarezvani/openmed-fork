@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add a tri-axial motion sample contract for accelerometer and gyroscope data
+  (`openmed.multimodal.sensors.motion`): exact units, bounded rates, relative
+  seconds only, `None` for missing samples, value-free error codes, content-free
+  reports and a synthetic parity fixture for later Swift and Kotlin ports (#4671).
 - Add a standard-library synthetic side-view walker fixture for pose and gait
   tests: seeded joint sequences with heel-strike, toe-off, cadence, step-time and
   double-support truth, asymmetry, far-leg occlusion, joint jitter and a

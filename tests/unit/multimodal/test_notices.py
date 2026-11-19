@@ -612,6 +612,7 @@ runtime_session.ProviderLease
 runtime_session.SessionEvent
 runtime_session.SessionLimits
 runtime_session.SessionResult
+sensors.motion.MotionChannel
 speech_endpoints.EndpointEvent
 speech_endpoints.LocalActivityDetector
 streaming.ambient.note_evidence.NoteCitation

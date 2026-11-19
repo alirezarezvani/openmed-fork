@@ -598,6 +598,7 @@ classification:
     - multimodal/edf-reader.md
     - multimodal/wfdb-reader.md
     - multimodal/physiological-waveforms.md
+    - multimodal/motion-samples.md
     - multimodal/wav-preflight.md
     - multimodal/wav-metadata.md
     - multimodal/asr-audio-profiles.md

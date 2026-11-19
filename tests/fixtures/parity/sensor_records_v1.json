@@ -1,0 +1,292 @@
+{
+  "cases": [
+    {
+      "name": "accelerometer_g_upright_with_gap",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 50.0,
+        "samples": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.01,
+            0.99,
+            -0.02
+          ],
+          null,
+          null,
+          [
+            -0.01,
+            1.02,
+            0.03
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "g"
+      },
+      "report_json": "{\"kind\":\"accelerometer\",\"missing_count\":2,\"notice\":\"Motion samples only; not fall detection, activity or clinical assessment. Consequential use requires explicit reviewer confirmation.\",\"review_required\":true,\"sample_count\":6,\"sample_rate_hz\":50.0,\"schema_version\":\"openmed.multimodal.sensors.motion.v1\",\"unit\":\"g\"}"
+    },
+    {
+      "name": "accelerometer_si_units_offset",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 100.0,
+        "samples": [
+          [
+            0.0,
+            9.80665,
+            0.0
+          ],
+          [
+            0.1,
+            9.7,
+            -0.2
+          ],
+          [
+            0.0,
+            9.9,
+            0.1
+          ]
+        ],
+        "start_offset_seconds": 12.5,
+        "unit": "m/s^2"
+      },
+      "report_json": "{\"kind\":\"accelerometer\",\"missing_count\":0,\"notice\":\"Motion samples only; not fall detection, activity or clinical assessment. Consequential use requires explicit reviewer confirmation.\",\"review_required\":true,\"sample_count\":3,\"sample_rate_hz\":100.0,\"schema_version\":\"openmed.multimodal.sensors.motion.v1\",\"unit\":\"m/s^2\"}"
+    },
+    {
+      "name": "gyroscope_turning",
+      "record": {
+        "kind": "gyroscope",
+        "sample_rate_hz": 200.0,
+        "samples": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.5,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.5,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "rad/s"
+      },
+      "report_json": "{\"kind\":\"gyroscope\",\"missing_count\":0,\"notice\":\"Motion samples only; not fall detection, activity or clinical assessment. Consequential use requires explicit reviewer confirmation.\",\"review_required\":true,\"sample_count\":4,\"sample_rate_hz\":200.0,\"schema_version\":\"openmed.multimodal.sensors.motion.v1\",\"unit\":\"rad/s\"}"
+    },
+    {
+      "error": "unknown_kind",
+      "name": "magnetometer_refused",
+      "record": {
+        "kind": "magnetometer",
+        "sample_rate_hz": 50.0,
+        "samples": [
+          [
+            1.0,
+            2.0,
+            3.0
+          ],
+          [
+            1.0,
+            2.0,
+            3.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "uT"
+      }
+    },
+    {
+      "error": "invalid_unit",
+      "name": "gyroscope_in_g",
+      "record": {
+        "kind": "gyroscope",
+        "sample_rate_hz": 50.0,
+        "samples": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "g"
+      }
+    },
+    {
+      "error": "invalid_unit",
+      "name": "accelerometer_in_degrees",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 50.0,
+        "samples": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "deg/s"
+      }
+    },
+    {
+      "error": "invalid_sample_rate",
+      "name": "rate_below_one_hz",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 0.5,
+        "samples": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "g"
+      }
+    },
+    {
+      "error": "invalid_sample_rate",
+      "name": "rate_above_one_khz",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 4000.0,
+        "samples": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "g"
+      }
+    },
+    {
+      "error": "axis_mismatch",
+      "name": "two_axis_sample",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 50.0,
+        "samples": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "g"
+      }
+    },
+    {
+      "error": "absolute_timestamp",
+      "name": "unix_epoch_start",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 50.0,
+        "samples": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": 1763510400.0,
+        "unit": "g"
+      }
+    },
+    {
+      "error": "absolute_timestamp",
+      "name": "iso_timestamp_start",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 50.0,
+        "samples": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": "2026-11-19T08:00:00Z",
+        "unit": "g"
+      }
+    },
+    {
+      "error": "invalid_sample_count",
+      "name": "single_sample",
+      "record": {
+        "kind": "accelerometer",
+        "sample_rate_hz": 50.0,
+        "samples": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "start_offset_seconds": 0.0,
+        "unit": "g"
+      }
+    }
+  ],
+  "schema_version": "openmed.multimodal.sensors.motion.v1",
+  "synthetic": true,
+  "version": 1
+}

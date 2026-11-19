@@ -541,6 +541,7 @@ nav:
           - EDF and EDF+ Reader: multimodal/edf-reader.md
           - Bounded WFDB ECG Reader: multimodal/wfdb-reader.md
           - Non-ECG Waveform Acquisition: multimodal/physiological-waveforms.md
+          - Tri-axial Motion Samples: multimodal/motion-samples.md
       - Audio and Video:
           - WAV Metadata Preflight: multimodal/wav-preflight.md
           - WAV Metadata and RF64: multimodal/wav-metadata.md
