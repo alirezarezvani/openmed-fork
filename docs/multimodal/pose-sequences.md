@@ -2,10 +2,11 @@
 
 `openmed.multimodal.pose.sequence` validates body landmarks that a caller's
 pose estimator produced for sampled video frames. It reads no files, runs no
-estimator, makes no network calls and computes no metric. Joint mapping from
-specific estimators, estimators themselves, gait and posture metrics and
-biometric session handling are separate components that build on it. The
-schema is `openmed.multimodal.pose.sequence.v1`.
+estimator, makes no network calls and computes no metric. Estimators, gait and
+posture metrics and biometric session handling are separate components that
+build on it; mapping estimator joint vocabularies onto the canonical joints is
+covered [below](#joint-vocabulary-mapping). The schema is
+`openmed.multimodal.pose.sequence.v1`.
 
 Every report carries this boundary:
 
@@ -78,6 +79,67 @@ sequence = PoseSequence(
     provenance=PoseEstimatorProvenance("synthetic-walker", digest, digest),
 )
 assert sequence.to_report()["missing_joint_counts"]["left_hip"] == 1
+```
+
+## Joint vocabulary mapping
+
+`openmed.multimodal.pose.joints` holds versioned tables (schema
+`openmed.multimodal.pose.joints.v1`) that map each estimator's joints onto
+`CANONICAL_JOINTS`. It is data only: it runs no estimator and never sees a
+coordinate.
+
+| Source | Source joints | Canonical joints it cannot produce |
+| --- | --- | --- |
+| `blazepose_33`: MediaPipe BlazePose landmark indices 0 to 32 | 33 | `head`, `neck`, `spine`, `pelvis` |
+| `apple_vision_3d`: Apple Vision `HumanBodyPose3DObservation.JointName` | 17 | `nose`, both heels, both foot indices |
+| `apple_vision_2d`: Apple Vision `HumanBodyPoseObservation.JointName` | 19 | `head`, `spine`, both heels, both foot indices |
+
+- Every source joint maps to exactly one canonical joint or to `None`
+  (unmapped). BlazePose face and hand landmarks, Apple's `topHead`, eyes and
+  ears are unmapped. Apple's `root` maps to `pelvis`, `centerShoulder` and the
+  2D `neck` to `neck`, and `centerHead` to `head`.
+- A canonical joint the source cannot produce is declared missing in the
+  table's `missing` list. Leave it out of the frame; do not derive a
+  placeholder such as a hip midpoint for `pelvis`.
+- `canonical_joint(source, source_joint)` takes a BlazePose index (`int`) or
+  an Apple joint name (`str`, the Swift property name such as `leftAnkle`). An
+  unknown source fails as `joint_source_invalid`; an out-of-range index, an
+  unknown name or a wrong key type (for example `True`, `1.0` or `"0"`) fails
+  as `source_joint_unknown`. Errors never echo the rejected value.
+- A mapping identifies the same joint by name. Estimators still place joints
+  at different anatomical positions, so a metric must not mix sources within
+  one sequence; the sequence's estimator provenance records which one ran.
+- Each table and requirement has an integer `version` and a SHA-256 `digest`
+  of its canonical JSON. Tests pin each version to its digest, so any change
+  needs a version bump.
+
+`METRIC_REQUIREMENTS` declares the canonical joints each metric family needs,
+as groups where at least one joint of every group must be producible:
+
+| Metric | Requires |
+| --- | --- |
+| `gait_timing` | both hips, ankles and heels |
+| `sit_to_stand` | both shoulders, hips, knees and ankles |
+| `posture` | both shoulders and hips, and `head` or `nose` |
+
+`missing_joint_groups(metric, source)` returns the unmet groups, empty when the
+source's vocabulary covers the metric. Both Apple Vision sources lack heels, so
+`gait_timing` abstains for them. This checks vocabulary only; per-frame
+visibility and camera view remain the metric's job.
+
+The tables, requirements, digests and rejection vectors are exported as
+`tests/fixtures/parity/pose_joints_v1.json` for the Swift and Kotlin ports.
+
+```python
+from openmed.multimodal.pose.joints import canonical_joint, missing_joint_groups
+
+assert canonical_joint("blazepose_33", 29) == "left_heel"
+assert canonical_joint("apple_vision_3d", "root") == "pelvis"
+assert canonical_joint("apple_vision_3d", "topHead") is None
+assert missing_joint_groups("gait_timing", "apple_vision_2d") == (
+    ("left_heel",),
+    ("right_heel",),
+)
 ```
 
 ## Privacy and review boundary

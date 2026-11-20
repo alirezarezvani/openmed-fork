@@ -1,0 +1,474 @@
+{
+  "schema_version": "openmed.multimodal.pose.joints.v1",
+  "canonical_joints": [
+    "nose",
+    "head",
+    "neck",
+    "left_shoulder",
+    "right_shoulder",
+    "left_elbow",
+    "right_elbow",
+    "left_wrist",
+    "right_wrist",
+    "spine",
+    "pelvis",
+    "left_hip",
+    "right_hip",
+    "left_knee",
+    "right_knee",
+    "left_ankle",
+    "right_ankle",
+    "left_heel",
+    "right_heel",
+    "left_foot_index",
+    "right_foot_index"
+  ],
+  "tables": [
+    {
+      "source": "blazepose_33",
+      "version": 1,
+      "mappings": [
+        {
+          "source_joint": 0,
+          "canonical": "nose"
+        },
+        {
+          "source_joint": 1,
+          "canonical": null
+        },
+        {
+          "source_joint": 2,
+          "canonical": null
+        },
+        {
+          "source_joint": 3,
+          "canonical": null
+        },
+        {
+          "source_joint": 4,
+          "canonical": null
+        },
+        {
+          "source_joint": 5,
+          "canonical": null
+        },
+        {
+          "source_joint": 6,
+          "canonical": null
+        },
+        {
+          "source_joint": 7,
+          "canonical": null
+        },
+        {
+          "source_joint": 8,
+          "canonical": null
+        },
+        {
+          "source_joint": 9,
+          "canonical": null
+        },
+        {
+          "source_joint": 10,
+          "canonical": null
+        },
+        {
+          "source_joint": 11,
+          "canonical": "left_shoulder"
+        },
+        {
+          "source_joint": 12,
+          "canonical": "right_shoulder"
+        },
+        {
+          "source_joint": 13,
+          "canonical": "left_elbow"
+        },
+        {
+          "source_joint": 14,
+          "canonical": "right_elbow"
+        },
+        {
+          "source_joint": 15,
+          "canonical": "left_wrist"
+        },
+        {
+          "source_joint": 16,
+          "canonical": "right_wrist"
+        },
+        {
+          "source_joint": 17,
+          "canonical": null
+        },
+        {
+          "source_joint": 18,
+          "canonical": null
+        },
+        {
+          "source_joint": 19,
+          "canonical": null
+        },
+        {
+          "source_joint": 20,
+          "canonical": null
+        },
+        {
+          "source_joint": 21,
+          "canonical": null
+        },
+        {
+          "source_joint": 22,
+          "canonical": null
+        },
+        {
+          "source_joint": 23,
+          "canonical": "left_hip"
+        },
+        {
+          "source_joint": 24,
+          "canonical": "right_hip"
+        },
+        {
+          "source_joint": 25,
+          "canonical": "left_knee"
+        },
+        {
+          "source_joint": 26,
+          "canonical": "right_knee"
+        },
+        {
+          "source_joint": 27,
+          "canonical": "left_ankle"
+        },
+        {
+          "source_joint": 28,
+          "canonical": "right_ankle"
+        },
+        {
+          "source_joint": 29,
+          "canonical": "left_heel"
+        },
+        {
+          "source_joint": 30,
+          "canonical": "right_heel"
+        },
+        {
+          "source_joint": 31,
+          "canonical": "left_foot_index"
+        },
+        {
+          "source_joint": 32,
+          "canonical": "right_foot_index"
+        }
+      ],
+      "missing": [
+        "head",
+        "neck",
+        "spine",
+        "pelvis"
+      ],
+      "digest": "d1c5871c56168ebdb8254263eabce4fe9837b75f89ca392d6f1b94246c769f8e"
+    },
+    {
+      "source": "apple_vision_3d",
+      "version": 1,
+      "mappings": [
+        {
+          "source_joint": "root",
+          "canonical": "pelvis"
+        },
+        {
+          "source_joint": "spine",
+          "canonical": "spine"
+        },
+        {
+          "source_joint": "centerShoulder",
+          "canonical": "neck"
+        },
+        {
+          "source_joint": "centerHead",
+          "canonical": "head"
+        },
+        {
+          "source_joint": "topHead",
+          "canonical": null
+        },
+        {
+          "source_joint": "leftShoulder",
+          "canonical": "left_shoulder"
+        },
+        {
+          "source_joint": "rightShoulder",
+          "canonical": "right_shoulder"
+        },
+        {
+          "source_joint": "leftElbow",
+          "canonical": "left_elbow"
+        },
+        {
+          "source_joint": "rightElbow",
+          "canonical": "right_elbow"
+        },
+        {
+          "source_joint": "leftWrist",
+          "canonical": "left_wrist"
+        },
+        {
+          "source_joint": "rightWrist",
+          "canonical": "right_wrist"
+        },
+        {
+          "source_joint": "leftHip",
+          "canonical": "left_hip"
+        },
+        {
+          "source_joint": "rightHip",
+          "canonical": "right_hip"
+        },
+        {
+          "source_joint": "leftKnee",
+          "canonical": "left_knee"
+        },
+        {
+          "source_joint": "rightKnee",
+          "canonical": "right_knee"
+        },
+        {
+          "source_joint": "leftAnkle",
+          "canonical": "left_ankle"
+        },
+        {
+          "source_joint": "rightAnkle",
+          "canonical": "right_ankle"
+        }
+      ],
+      "missing": [
+        "nose",
+        "left_heel",
+        "right_heel",
+        "left_foot_index",
+        "right_foot_index"
+      ],
+      "digest": "64e3f23d3256f542d1ed73415982724ce11314741a4cedbc6fb6ffd89f13d5f4"
+    },
+    {
+      "source": "apple_vision_2d",
+      "version": 1,
+      "mappings": [
+        {
+          "source_joint": "nose",
+          "canonical": "nose"
+        },
+        {
+          "source_joint": "leftEye",
+          "canonical": null
+        },
+        {
+          "source_joint": "rightEye",
+          "canonical": null
+        },
+        {
+          "source_joint": "leftEar",
+          "canonical": null
+        },
+        {
+          "source_joint": "rightEar",
+          "canonical": null
+        },
+        {
+          "source_joint": "neck",
+          "canonical": "neck"
+        },
+        {
+          "source_joint": "root",
+          "canonical": "pelvis"
+        },
+        {
+          "source_joint": "leftShoulder",
+          "canonical": "left_shoulder"
+        },
+        {
+          "source_joint": "rightShoulder",
+          "canonical": "right_shoulder"
+        },
+        {
+          "source_joint": "leftElbow",
+          "canonical": "left_elbow"
+        },
+        {
+          "source_joint": "rightElbow",
+          "canonical": "right_elbow"
+        },
+        {
+          "source_joint": "leftWrist",
+          "canonical": "left_wrist"
+        },
+        {
+          "source_joint": "rightWrist",
+          "canonical": "right_wrist"
+        },
+        {
+          "source_joint": "leftHip",
+          "canonical": "left_hip"
+        },
+        {
+          "source_joint": "rightHip",
+          "canonical": "right_hip"
+        },
+        {
+          "source_joint": "leftKnee",
+          "canonical": "left_knee"
+        },
+        {
+          "source_joint": "rightKnee",
+          "canonical": "right_knee"
+        },
+        {
+          "source_joint": "leftAnkle",
+          "canonical": "left_ankle"
+        },
+        {
+          "source_joint": "rightAnkle",
+          "canonical": "right_ankle"
+        }
+      ],
+      "missing": [
+        "head",
+        "spine",
+        "left_heel",
+        "right_heel",
+        "left_foot_index",
+        "right_foot_index"
+      ],
+      "digest": "2e79a4232086f2a0e1f328350a96989687da36b8366c5d1bc16917e38baefb51"
+    }
+  ],
+  "metric_requirements": [
+    {
+      "metric": "gait_timing",
+      "version": 1,
+      "requires": [
+        [
+          "left_hip"
+        ],
+        [
+          "left_ankle"
+        ],
+        [
+          "left_heel"
+        ],
+        [
+          "right_hip"
+        ],
+        [
+          "right_ankle"
+        ],
+        [
+          "right_heel"
+        ]
+      ],
+      "digest": "a824c9edc859974ab3e3b2964cf5749029a2b443ceb09392538a194eec5336e0"
+    },
+    {
+      "metric": "sit_to_stand",
+      "version": 1,
+      "requires": [
+        [
+          "left_shoulder"
+        ],
+        [
+          "left_hip"
+        ],
+        [
+          "left_knee"
+        ],
+        [
+          "left_ankle"
+        ],
+        [
+          "right_shoulder"
+        ],
+        [
+          "right_hip"
+        ],
+        [
+          "right_knee"
+        ],
+        [
+          "right_ankle"
+        ]
+      ],
+      "digest": "09de7e85dab8d04236660ad3c39ff1d7ee3f4bb3f956d4ec9c00cb4d13fb2308"
+    },
+    {
+      "metric": "posture",
+      "version": 1,
+      "requires": [
+        [
+          "left_shoulder"
+        ],
+        [
+          "left_hip"
+        ],
+        [
+          "right_shoulder"
+        ],
+        [
+          "right_hip"
+        ],
+        [
+          "head",
+          "nose"
+        ]
+      ],
+      "digest": "25b31c00f94ce5c51bae1dd8dde52dc8caa254c4b37883b3219bcc12b94ae1e9"
+    }
+  ],
+  "rejections": [
+    {
+      "source": "blazepose_33",
+      "source_joint": 33,
+      "error": "source_joint_unknown"
+    },
+    {
+      "source": "blazepose_33",
+      "source_joint": -1,
+      "error": "source_joint_unknown"
+    },
+    {
+      "source": "blazepose_33",
+      "source_joint": "0",
+      "error": "source_joint_unknown"
+    },
+    {
+      "source": "blazepose_33",
+      "source_joint": "left_heel",
+      "error": "source_joint_unknown"
+    },
+    {
+      "source": "apple_vision_3d",
+      "source_joint": "nose",
+      "error": "source_joint_unknown"
+    },
+    {
+      "source": "apple_vision_3d",
+      "source_joint": "leftheel",
+      "error": "source_joint_unknown"
+    },
+    {
+      "source": "apple_vision_2d",
+      "source_joint": "centerHead",
+      "error": "source_joint_unknown"
+    },
+    {
+      "source": "apple_vision_2d",
+      "source_joint": 0,
+      "error": "source_joint_unknown"
+    },
+    {
+      "source": "openpose_25",
+      "source_joint": 0,
+      "error": "joint_source_invalid"
+    }
+  ]
+}

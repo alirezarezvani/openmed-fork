@@ -572,6 +572,9 @@ generated_text_guard.AssetIdentifierDigest
 generated_text_guard.GuardPolicy
 generated_text_guard.GuardedTextResult
 generated_text_guard.PHISpan
+pose.joints.JointMapping
+pose.joints.JointMappingTable
+pose.joints.MetricJointRequirement
 pose.sequence.PoseEstimatorProvenance
 pose.sequence.PoseFrame
 pose.sequence.PoseJointObservation

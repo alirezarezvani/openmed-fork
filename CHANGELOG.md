@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add versioned joint-vocabulary mapping tables
+  (`openmed.multimodal.pose.joints`) from MediaPipe BlazePose landmark indices
+  and Apple Vision 3D and 2D joint names onto the canonical pose joints, with
+  declared-missing joints instead of synthesized ones, fail-closed lookups with
+  stable codes, digest-pinned table versions, a metric joint-requirements table
+  for abstention gates, and the shared parity fixture `pose_joints_v1.json`
+  (#4676).
 - Add a privacy-safe pose keypoint sequence contract
   (`openmed.multimodal.pose.sequence`): a closed 21-joint canonical vocabulary,
   normalized coordinates with visibility and presence, frames keyed by
