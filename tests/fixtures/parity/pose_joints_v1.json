@@ -352,22 +352,18 @@
           "left_hip"
         ],
         [
-          "left_ankle"
-        ],
-        [
-          "left_heel"
-        ],
-        [
           "right_hip"
         ],
         [
-          "right_ankle"
+          "left_heel",
+          "left_ankle"
         ],
         [
-          "right_heel"
+          "right_heel",
+          "right_ankle"
         ]
       ],
-      "digest": "a824c9edc859974ab3e3b2964cf5749029a2b443ceb09392538a194eec5336e0"
+      "digest": "d53d4618c820ba997dbfd16977fe9b3fcb00f0a6442e21cf6849f082d26794f1"
     },
     {
       "metric": "sit_to_stand",

@@ -38,6 +38,7 @@ __all__ = [
     "canonical_joint",
     "joint_mapping_record",
     "missing_joint_groups",
+    "resolve_metric_joints",
 ]
 
 POSE_JOINTS_SCHEMA_VERSION: Final = "openmed.multimodal.pose.joints.v1"
@@ -230,7 +231,8 @@ class MetricJointRequirement:
         version: Positive integer; bump it whenever the groups change.
         requires: Groups of canonical joints. A source satisfies the
             requirement when it produces at least one joint of every group;
-            a single-joint group is a hard requirement.
+            a single-joint group is a hard requirement. Joints within a group
+            are in order of preference, so a later joint is a fallback.
 
     This checks vocabulary capability only. Per-frame visibility and view
     checks belong to the metric itself.
@@ -402,10 +404,14 @@ def _pairs(*names: str) -> tuple[tuple[str, ...], ...]:
 METRIC_REQUIREMENTS: Final[Mapping[PoseMetric, MetricJointRequirement]] = (
     MappingProxyType(
         {
-            # Heel-strike and toe-off candidates from ankle and heel
-            # trajectories, referenced to the hips (#4682).
+            # Heel-strike and toe-off candidates from foot trajectories,
+            # referenced to the hips (#4682). The heel is preferred; sources
+            # without heels (Apple Vision) fall back to the ankle.
             PoseMetric.GAIT_TIMING: MetricJointRequirement(
-                PoseMetric.GAIT_TIMING, 1, _pairs("hip", "ankle", "heel")
+                PoseMetric.GAIT_TIMING,
+                1,
+                _pairs("hip")
+                + (("left_heel", "left_ankle"), ("right_heel", "right_ankle")),
             ),
             # Hip (shoulder-hip-knee) and knee (hip-knee-ankle) angles (#4683).
             PoseMetric.SIT_TO_STAND: MetricJointRequirement(
@@ -468,6 +474,33 @@ def missing_joint_groups(
         for group in METRIC_REQUIREMENTS[member].requires
         if not produced.intersection(group)
     )
+
+
+def resolve_metric_joints(
+    metric: PoseMetric | str, source: JointSource | str
+) -> tuple[str, ...]:
+    """Return the joint ``source`` should use for each group of ``metric``.
+
+    Each group resolves to its first joint the source produces, so the result
+    records whether a fallback is in use: for ``gait_timing`` BlazePose
+    resolves to the heels and Apple Vision to the ankles.
+
+    Raises:
+        PoseContractError: ``metric_invalid``, ``joint_source_invalid``, or
+            ``metric_joints_missing`` when any group is unmet (see
+            ``missing_joint_groups``).
+    """
+    member = _metric(metric)
+    if member is None:
+        _reject("metric_invalid")
+    produced = _table(source).produced
+    resolved = []
+    for group in METRIC_REQUIREMENTS[member].requires:
+        usable = [joint for joint in group if joint in produced]
+        if not usable:
+            _reject("metric_joints_missing")
+        resolved.append(usable[0])
+    return tuple(resolved)
 
 
 def joint_mapping_record() -> dict[str, object]:

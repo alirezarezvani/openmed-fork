@@ -21,6 +21,7 @@ from openmed.multimodal.pose.joints import (
     canonical_joint,
     joint_mapping_record,
     missing_joint_groups,
+    resolve_metric_joints,
 )
 from openmed.multimodal.pose.sequence import CANONICAL_JOINTS, PoseContractError
 
@@ -98,7 +99,7 @@ PINNED_TABLE_DIGESTS = {
 PINNED_REQUIREMENT_DIGESTS = {
     "gait_timing": (
         1,
-        "a824c9edc859974ab3e3b2964cf5749029a2b443ceb09392538a194eec5336e0",
+        "d53d4618c820ba997dbfd16977fe9b3fcb00f0a6442e21cf6849f082d26794f1",
     ),
     "sit_to_stand": (
         1,
@@ -253,6 +254,8 @@ def test_rejections_do_not_echo_or_chain_the_rejected_value():
         lambda: canonical_joint(secret, 0),
         lambda: missing_joint_groups(secret, "blazepose_33"),
         lambda: missing_joint_groups("posture", secret),
+        lambda: resolve_metric_joints(secret, "blazepose_33"),
+        lambda: resolve_metric_joints("posture", secret),
     ):
         with pytest.raises(PoseContractError) as raised:
             call()
@@ -296,8 +299,8 @@ def test_metric_requirements_cover_every_metric_with_canonical_joints():
     ("metric", "source", "expected"),
     [
         ("gait_timing", "blazepose_33", ()),
-        ("gait_timing", "apple_vision_3d", (("left_heel",), ("right_heel",))),
-        ("gait_timing", "apple_vision_2d", (("left_heel",), ("right_heel",))),
+        ("gait_timing", "apple_vision_3d", ()),
+        ("gait_timing", "apple_vision_2d", ()),
         ("sit_to_stand", "blazepose_33", ()),
         ("sit_to_stand", "apple_vision_3d", ()),
         ("sit_to_stand", "apple_vision_2d", ()),
@@ -319,10 +322,88 @@ def test_alternative_group_needs_only_one_joint():
     assert "nose" in JOINT_TABLES[JointSource.APPLE_VISION_3D].missing
 
 
+@pytest.mark.parametrize(
+    ("source", "feet"),
+    [
+        ("blazepose_33", ("left_heel", "right_heel")),
+        ("apple_vision_3d", ("left_ankle", "right_ankle")),
+        ("apple_vision_2d", ("left_ankle", "right_ankle")),
+    ],
+)
+def test_gait_timing_prefers_heels_and_falls_back_to_ankles(source, feet):
+    assert resolve_metric_joints("gait_timing", source) == (
+        "left_hip",
+        "right_hip",
+        *feet,
+    )
+
+
+@pytest.mark.parametrize("source", list(JointSource))
+def test_both_feet_resolve_to_the_same_tier(source):
+    # A heel on one side and an ankle on the other would bias step-time
+    # asymmetry, so every built-in source must resolve both sides alike.
+    resolved = resolve_metric_joints(PoseMetric.GAIT_TIMING, source)
+    left, right = resolved[2], resolved[3]
+    assert right == "right_" + left[len("left_") :]
+
+
+@pytest.mark.parametrize("metric", list(PoseMetric))
+@pytest.mark.parametrize("source", list(JointSource))
+def test_resolved_joints_are_produced_and_follow_group_preference(metric, source):
+    resolved = resolve_metric_joints(metric, source)
+    groups = METRIC_REQUIREMENTS[metric].requires
+    produced = JOINT_TABLES[source].produced
+    assert len(resolved) == len(groups)
+    for joint, group in zip(resolved, groups, strict=True):
+        assert joint in produced
+        assert joint == next(j for j in group if j in produced)
+
+
+def test_posture_resolves_head_or_nose_per_source():
+    assert resolve_metric_joints("posture", "blazepose_33")[-1] == "nose"
+    assert resolve_metric_joints("posture", "apple_vision_3d")[-1] == "head"
+    assert resolve_metric_joints("posture", "apple_vision_2d")[-1] == "nose"
+
+
+def test_unmet_requirement_fails_closed_when_resolving(monkeypatch):
+    import openmed.multimodal.pose.joints as joints
+
+    strict = MetricJointRequirement(
+        PoseMetric.GAIT_TIMING, 1, (("left_heel",), ("right_heel",))
+    )
+    monkeypatch.setattr(
+        joints,
+        "METRIC_REQUIREMENTS",
+        {**joints.METRIC_REQUIREMENTS, PoseMetric.GAIT_TIMING: strict},
+    )
+    assert missing_joint_groups("gait_timing", "apple_vision_3d") == (
+        ("left_heel",),
+        ("right_heel",),
+    )
+    with _code("metric_joints_missing"):
+        resolve_metric_joints("gait_timing", "apple_vision_3d")
+    assert resolve_metric_joints("gait_timing", "blazepose_33") == (
+        "left_heel",
+        "right_heel",
+    )
+
+
 @pytest.mark.parametrize("metric", [None, "fall_risk", "GAIT_TIMING", 1])
 def test_unknown_metric_fails_closed(metric):
     with _code("metric_invalid"):
         missing_joint_groups(metric, "blazepose_33")  # type: ignore[arg-type]
+    with _code("metric_invalid"):
+        resolve_metric_joints(metric, "blazepose_33")  # type: ignore[arg-type]
+
+
+def test_group_order_is_part_of_the_requirement_digest():
+    pinned = METRIC_REQUIREMENTS[PoseMetric.GAIT_TIMING]
+    swapped = MetricJointRequirement(
+        pinned.metric,
+        pinned.version,
+        tuple(tuple(reversed(group)) for group in pinned.requires),
+    )
+    assert swapped.digest != pinned.digest
 
 
 @pytest.mark.parametrize(

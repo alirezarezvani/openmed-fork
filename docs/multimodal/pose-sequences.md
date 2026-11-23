@@ -114,31 +114,47 @@ coordinate.
   needs a version bump.
 
 `METRIC_REQUIREMENTS` declares the canonical joints each metric family needs,
-as groups where at least one joint of every group must be producible:
+as groups where at least one joint of every group must be producible. Joints in
+a group are listed in order of preference, so later ones are fallbacks:
 
 | Metric | Requires |
 | --- | --- |
-| `gait_timing` | both hips, ankles and heels |
+| `gait_timing` | both hips, and per foot the heel or, failing that, the ankle |
 | `sit_to_stand` | both shoulders, hips, knees and ankles |
 | `posture` | both shoulders and hips, and `head` or `nose` |
 
 `missing_joint_groups(metric, source)` returns the unmet groups, empty when the
-source's vocabulary covers the metric. Both Apple Vision sources lack heels, so
-`gait_timing` abstains for them. This checks vocabulary only; per-frame
-visibility and camera view remain the metric's job.
+source's vocabulary covers the metric; a non-empty result is the reason to
+abstain. `resolve_metric_joints(metric, source)` returns the joint to use for
+each group, which records whether a fallback is in use, and fails as
+`metric_joints_missing` when a group is unmet. For `gait_timing`, BlazePose
+resolves to the heels and both Apple Vision sources, which have no heel
+points, resolve to the ankles. Ankle trajectories are a coarser proxy for foot
+contact than heel trajectories, so a gait metric should carry the resolved
+joints into its evidence and validate its tolerance for the ankle path
+separately. Both feet always resolve to the same joint type, so step-time
+asymmetry never compares a heel with an ankle. This checks vocabulary only;
+per-frame visibility and camera view remain the metric's job.
 
 The tables, requirements, digests and rejection vectors are exported as
 `tests/fixtures/parity/pose_joints_v1.json` for the Swift and Kotlin ports.
 
 ```python
-from openmed.multimodal.pose.joints import canonical_joint, missing_joint_groups
+from openmed.multimodal.pose.joints import (
+    canonical_joint,
+    missing_joint_groups,
+    resolve_metric_joints,
+)
 
 assert canonical_joint("blazepose_33", 29) == "left_heel"
 assert canonical_joint("apple_vision_3d", "root") == "pelvis"
 assert canonical_joint("apple_vision_3d", "topHead") is None
-assert missing_joint_groups("gait_timing", "apple_vision_2d") == (
-    ("left_heel",),
-    ("right_heel",),
+assert missing_joint_groups("gait_timing", "apple_vision_2d") == ()
+assert resolve_metric_joints("gait_timing", "apple_vision_2d") == (
+    "left_hip",
+    "right_hip",
+    "left_ankle",
+    "right_ankle",
 )
 ```
 
