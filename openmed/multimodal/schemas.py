@@ -44,6 +44,7 @@ from .processing_summary import PROCESSING_SUMMARY_SCHEMA_VERSION, ProcessingOut
 from .provider_result import (
     PROVIDER_RESULT_SCHEMA_VERSION,
     PROVIDER_RESULT_SCHEMA_VERSION_V2,
+    PROVIDER_RESULT_SCHEMA_VERSION_V3,
     ProviderAbstentionCode,
     ProviderResultOutcome,
 )
@@ -71,13 +72,13 @@ BATCH_SCHEMA_ID: Final = (
     "https://openmed.ai/schemas/multimodal/asset-batch-v1.schema.json"
 )
 ABSTENTION_SCHEMA_ID: Final = (
-    "https://openmed.ai/schemas/multimodal/abstention-record-v1.schema.json"
+    "https://openmed.ai/schemas/multimodal/abstention-record-v2.schema.json"
 )
 PROCESSING_SUMMARY_SCHEMA_ID: Final = (
-    "https://openmed.ai/schemas/multimodal/processing-summary-v1.schema.json"
+    "https://openmed.ai/schemas/multimodal/processing-summary-v2.schema.json"
 )
 PROVIDER_RESULT_SCHEMA_ID: Final = (
-    "https://openmed.ai/schemas/multimodal/provider-result-v1.schema.json"
+    "https://openmed.ai/schemas/multimodal/provider-result-v2.schema.json"
 )
 
 MULTIMODAL_SCHEMA_NAMES: Final = (
@@ -140,11 +141,20 @@ _REASONS_BY_STAGE: Final = {
     stage.value: tuple(sorted(reason.value for reason in reasons))
     for stage, reasons in _ALLOWED_REASONS.items()
 }
-_ABSTENTION_VERSIONS: Final = (ABSTENTION_SCHEMA_VERSION, 2)
-_PROVIDER_V2_CODES: Final = tuple(
-    code.value
-    for code in ProviderAbstentionCode
-    if AbstentionReason(code.value).schema_version == 2
+_ABSTENTION_VERSIONS: Final = (ABSTENTION_SCHEMA_VERSION, 2, 3)
+_PROVIDER_VERSIONED_CODES: Final = {
+    wire_version: tuple(
+        code.value
+        for code in ProviderAbstentionCode
+        if AbstentionReason(code.value).schema_version == version
+    )
+    for version, wire_version in (
+        (2, PROVIDER_RESULT_SCHEMA_VERSION_V2),
+        (3, PROVIDER_RESULT_SCHEMA_VERSION_V3),
+    )
+}
+_PROVIDER_NON_V1_CODES: Final = tuple(
+    code for codes in _PROVIDER_VERSIONED_CODES.values() for code in codes
 )
 _GUARD_DIGEST_FIELDS: Final = (
     "detector_version_digest",
@@ -578,22 +588,28 @@ def _provider_outcome_constraints() -> list[dict[str, Any]]:
             },
             "then": {"properties": {"abstention_code": {"type": "null"}}},
         },
+        *(
+            {
+                "if": {"properties": {"schema_version": {"const": wire_version}}},
+                "then": {
+                    "required": ["abstention_code"],
+                    "properties": {
+                        "outcome": {"const": ProviderResultOutcome.ABSTENTION.value},
+                        "abstention_code": {"enum": list(codes)},
+                    },
+                },
+            }
+            for wire_version, codes in _PROVIDER_VERSIONED_CODES.items()
+        ),
         {
             "if": {
                 "properties": {
-                    "schema_version": {"const": PROVIDER_RESULT_SCHEMA_VERSION_V2}
+                    "schema_version": {"const": PROVIDER_RESULT_SCHEMA_VERSION}
                 }
             },
             "then": {
-                "required": ["abstention_code"],
                 "properties": {
-                    "outcome": {"const": ProviderResultOutcome.ABSTENTION.value},
-                    "abstention_code": {"enum": list(_PROVIDER_V2_CODES)},
-                },
-            },
-            "else": {
-                "properties": {
-                    "abstention_code": {"not": {"enum": list(_PROVIDER_V2_CODES)}}
+                    "abstention_code": {"not": {"enum": list(_PROVIDER_NON_V1_CODES)}}
                 }
             },
         },
@@ -648,6 +664,7 @@ def _build_provider_result_schema() -> dict[str, Any]:
                     "enum": [
                         PROVIDER_RESULT_SCHEMA_VERSION,
                         PROVIDER_RESULT_SCHEMA_VERSION_V2,
+                        PROVIDER_RESULT_SCHEMA_VERSION_V3,
                     ]
                 },
                 "provider_id": {"$ref": "#/$defs/providerIdentifier"},

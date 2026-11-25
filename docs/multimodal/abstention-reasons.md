@@ -46,7 +46,8 @@ on where the measurable quality gate runs.
 
 `AbstentionRecord.from_json()` requires exactly these fields:
 
-- `schema_version`: `1` for legacy codes, `2` for the six codes below
+- `schema_version`: `1` for legacy codes, `2` for the six consent, capture,
+  language and policy codes, `3` for the five pose codes below
 - `stage`: one documented stage
 - `reason`: one reason allowed for that stage
 
@@ -95,6 +96,46 @@ This vocabulary does not establish consent, route languages, invoke providers,
 or authorize a clinical decision. Session, CLI, REST and Swift adapters adopt
 these codes in their own issues. Consequential adapter outputs still require
 explicit reviewer confirmation and a non-diagnostic notice.
+
+## Pose subject and coverage vocabulary (v3)
+
+Pose pipelines stop for reasons the earlier codes do not describe: nobody is in
+frame, several people are, the subject is too far away or partly outside the
+frame, or too few joints or frames are usable. These five codes are shared with
+`ProviderAbstentionCode` and Swift `MultimodalAbstention`. Like every other code
+they carry no counts, joint names, frame indices, coordinates or image content.
+
+| Code | Valid stages | Meaning |
+| --- | --- | --- |
+| `no_subject` | `inference`, `post_process` | No person was detected in the analysed frames. |
+| `multiple_subjects` | `inference`, `post_process` | More than one person was detected where the measurement needs exactly one. |
+| `subject_out_of_range` | `inference`, `post_process` | The subject is too far from the camera or not fully inside the frame for the measurement. |
+| `insufficient_joint_visibility` | `inference`, `post_process` | Joints the measurement requires are missing or below the caller's visibility threshold. |
+| `insufficient_frame_coverage` | `inference`, `post_process` | Too few usable frames, or gaps too long, for the requested window. |
+
+Each code can only be decided after an estimator has looked at frames, so all
+five are rejected at `preflight` and `decode`. Use `inference` when the
+estimator itself observes the condition, and `post_process` when a quality gate
+over the assembled pose sequence does.
+
+These codes use wire version 3. Records with legacy or v2 codes keep their exact
+v1 and v2 bytes. Provider results with a pose code use
+`openmed.multimodal.provider_result.v3`.
+
+```python
+record = AbstentionRecord(
+    stage=AbstentionStage.POST_PROCESS,
+    reason=AbstentionReason.INSUFFICIENT_FRAME_COVERAGE,
+)
+assert record.to_json() == (
+    '{"schema_version":3,"stage":"post_process",'
+    '"reason":"insufficient_frame_coverage"}'
+)
+```
+
+This vocabulary only names why a pipeline stopped. Producing these codes from
+pose quality checks, and choosing thresholds, belongs to the pose quality gate.
+None of them is a measurement result, and none says anything about the person.
 
 ## JSON Schema drift expectations
 

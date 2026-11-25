@@ -416,12 +416,24 @@ NEW_CODES = (
     "language_uncertain",
     "policy_refused",
 )
+POSE_CODES = (
+    "no_subject",
+    "multiple_subjects",
+    "subject_out_of_range",
+    "insufficient_joint_visibility",
+    "insufficient_frame_coverage",
+)
 
 
 @pytest.mark.parametrize("code", list(ProviderAbstentionCode))
 def test_every_code_round_trips_with_its_required_version(code) -> None:
     result = _result(outcome="abstention", output_digest=None, abstention_code=code)
-    version = 2 if code.value in NEW_CODES else 1
+    if code.value in POSE_CODES:
+        version = 3
+    elif code.value in NEW_CODES:
+        version = 2
+    else:
+        version = 1
     assert result.schema_version == f"openmed.multimodal.provider_result.v{version}"
     assert (
         ProviderResultEnvelope.from_json(result.to_json()).to_json() == result.to_json()
@@ -438,6 +450,8 @@ def test_every_code_round_trips_with_its_required_version(code) -> None:
         1,
         "openmed.multimodal.provider_result.v1",
         "openmed.multimodal.provider_result.v2",
+        "openmed.multimodal.provider_result.v3",
+        "openmed.multimodal.provider_result.v4",
     ],
 )
 def test_provider_wire_versions_must_match_code(code, version) -> None:
@@ -450,7 +464,7 @@ def test_provider_wire_versions_must_match_code(code, version) -> None:
             ProviderResultEnvelope.from_dict(payload)
 
 
-@pytest.mark.parametrize("code", NEW_CODES)
+@pytest.mark.parametrize("code", NEW_CODES + POSE_CODES)
 @pytest.mark.parametrize(
     "outcome", ["success", "provider_unavailable", "validation_failure"]
 )

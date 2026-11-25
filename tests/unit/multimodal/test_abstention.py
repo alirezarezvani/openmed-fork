@@ -59,6 +59,20 @@ NEW_CODE_STAGES = {
 VALID_RECORDS += tuple(
     (stage, reason) for reason, stages in NEW_CODE_STAGES.items() for stage in stages
 )
+V2_RECORDS = VALID_RECORDS[len(V1_RECORDS) :]
+POSE_CODE_STAGES = {
+    reason: (AbstentionStage.INFERENCE, AbstentionStage.POST_PROCESS)
+    for reason in (
+        AbstentionReason.NO_SUBJECT,
+        AbstentionReason.MULTIPLE_SUBJECTS,
+        AbstentionReason.SUBJECT_OUT_OF_RANGE,
+        AbstentionReason.INSUFFICIENT_JOINT_VISIBILITY,
+        AbstentionReason.INSUFFICIENT_FRAME_COVERAGE,
+    )
+}
+VALID_RECORDS += tuple(
+    (stage, reason) for reason, stages in POSE_CODE_STAGES.items() for stage in stages
+)
 
 INVALID_RECORDS = tuple(
     (stage, reason)
@@ -196,12 +210,59 @@ def test_new_codes_use_v2_and_have_no_content_fields(reason) -> None:
 
 
 @pytest.mark.parametrize(("stage", "reason"), VALID_RECORDS)
-@pytest.mark.parametrize("version", [None, True, 0, 1, 2, 3, "2"])
+@pytest.mark.parametrize("version", [None, True, 0, 1, 2, 3, 4, "2", "3"])
 def test_wire_versions_must_match_reason(stage, reason, version) -> None:
     payload = {"stage": stage.value, "reason": reason.value, "schema_version": version}
-    required = 2 if reason in NEW_CODE_STAGES else 1
+    if reason in POSE_CODE_STAGES:
+        required = 3
+    elif reason in NEW_CODE_STAGES:
+        required = 2
+    else:
+        required = 1
     if type(version) is int and version == required:
         assert AbstentionRecord.from_dict(payload).schema_version == required
     else:
         with pytest.raises(ValueError, match="schema_version is unsupported"):
             AbstentionRecord.from_dict(payload)
+
+
+def _golden(version: int, stage: AbstentionStage, reason: AbstentionReason) -> str:
+    return (
+        '{"schema_version":'
+        + str(version)
+        + ',"stage":"'
+        + stage.value
+        + '","reason":"'
+        + reason.value
+        + '"}'
+    )
+
+
+@pytest.mark.parametrize(("stage", "reason"), V2_RECORDS)
+def test_all_v2_records_are_byte_identical(stage, reason) -> None:
+    golden = _golden(2, stage, reason)
+    assert AbstentionRecord(stage, reason).to_json().encode() == golden.encode()
+    assert AbstentionRecord.from_json(golden).to_json() == golden
+
+
+@pytest.mark.parametrize("reason", POSE_CODE_STAGES)
+def test_pose_codes_use_v3_and_have_no_content_fields(reason) -> None:
+    for stage in POSE_CODE_STAGES[reason]:
+        record = AbstentionRecord(stage, reason)
+        assert record.schema_version == 3
+        assert record.to_json() == _golden(3, stage, reason)
+        assert AbstentionRecord.from_json(record.to_json()) == record
+    for field in ("keypoints", "subject_count", "joint", "frame_index", "message"):
+        payload = record.to_dict() | {field: "SYNTHETIC_PRIVATE_SENTINEL"}
+        with pytest.raises(ValueError) as caught:
+            AbstentionRecord.from_dict(payload)
+        assert "SYNTHETIC_PRIVATE_SENTINEL" not in str(caught.value)
+
+
+@pytest.mark.parametrize("reason", POSE_CODE_STAGES)
+@pytest.mark.parametrize("stage", [AbstentionStage.PREFLIGHT, AbstentionStage.DECODE])
+def test_pose_codes_are_rejected_before_frames_are_analysed(stage, reason) -> None:
+    with pytest.raises(ValueError, match="reason is not valid for stage"):
+        AbstentionRecord(stage, reason)
+    with pytest.raises(ValueError, match="reason is not valid for stage"):
+        AbstentionRecord.from_json(_golden(3, stage, reason))

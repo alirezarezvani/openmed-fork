@@ -56,11 +56,20 @@ class AbstentionReason(str, Enum):
     LANGUAGE_UNSUPPORTED = "language_unsupported"
     LANGUAGE_UNCERTAIN = "language_uncertain"
     POLICY_REFUSED = "policy_refused"
+    NO_SUBJECT = "no_subject"
+    MULTIPLE_SUBJECTS = "multiple_subjects"
+    SUBJECT_OUT_OF_RANGE = "subject_out_of_range"
+    INSUFFICIENT_JOINT_VISIBILITY = "insufficient_joint_visibility"
+    INSUFFICIENT_FRAME_COVERAGE = "insufficient_frame_coverage"
 
     @property
     def schema_version(self) -> int:
         """Return the wire version required by this controlled code."""
-        return 2 if self in _V2_REASONS else ABSTENTION_SCHEMA_VERSION
+        if self in _V3_REASONS:
+            return 3
+        if self in _V2_REASONS:
+            return 2
+        return ABSTENTION_SCHEMA_VERSION
 
 
 _V2_REASONS: Final = frozenset(
@@ -71,6 +80,18 @@ _V2_REASONS: Final = frozenset(
         AbstentionReason.LANGUAGE_UNSUPPORTED,
         AbstentionReason.LANGUAGE_UNCERTAIN,
         AbstentionReason.POLICY_REFUSED,
+    }
+)
+
+# Pose subject and coverage codes. They are produced once an estimator has
+# looked at frames, so they are valid only from inference onwards.
+_V3_REASONS: Final = frozenset(
+    {
+        AbstentionReason.NO_SUBJECT,
+        AbstentionReason.MULTIPLE_SUBJECTS,
+        AbstentionReason.SUBJECT_OUT_OF_RANGE,
+        AbstentionReason.INSUFFICIENT_JOINT_VISIBILITY,
+        AbstentionReason.INSUFFICIENT_FRAME_COVERAGE,
     }
 )
 
@@ -110,6 +131,7 @@ _ALLOWED_REASONS: Final = {
             AbstentionReason.TEMPORAL_INSTABILITY,
             AbstentionReason.PROVIDER_UNAVAILABLE,
         }
+        | _V3_REASONS
     ),
     AbstentionStage.POST_PROCESS: frozenset(
         {
@@ -124,6 +146,7 @@ _ALLOWED_REASONS: Final = {
             AbstentionReason.SPEAKER_UNCERTAINTY,
             AbstentionReason.TEMPORAL_INSTABILITY,
         }
+        | _V3_REASONS
     ),
 }
 
@@ -158,9 +181,10 @@ class AbstentionRecord:
     Args:
         stage: Pipeline stage at which processing stopped.
         reason: Stable reason code valid for that stage.
-        schema_version: Omit to select version 1 for legacy codes or version 2
-            for consent, capture, language and policy codes. An explicit version
-            must match the code's required version.
+        schema_version: Omit to select version 1 for legacy codes, version 2
+            for consent, capture, language and policy codes, or version 3 for
+            pose subject and coverage codes. An explicit version must match the
+            code's required version.
     """
 
     stage: AbstentionStage

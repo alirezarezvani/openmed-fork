@@ -4429,6 +4429,12 @@
     "OpenMedKit.MultimodalAbstention.consentWithdrawn": [
       "case OpenMedKit.MultimodalAbstention.consentWithdrawn"
     ],
+    "OpenMedKit.MultimodalAbstention.insufficientFrameCoverage": [
+      "case OpenMedKit.MultimodalAbstention.insufficientFrameCoverage"
+    ],
+    "OpenMedKit.MultimodalAbstention.insufficientJointVisibility": [
+      "case OpenMedKit.MultimodalAbstention.insufficientJointVisibility"
+    ],
     "OpenMedKit.MultimodalAbstention.languageUncertain": [
       "case OpenMedKit.MultimodalAbstention.languageUncertain"
     ],
@@ -4441,6 +4447,12 @@
     "OpenMedKit.MultimodalAbstention.malformedMedia": [
       "case OpenMedKit.MultimodalAbstention.malformedMedia"
     ],
+    "OpenMedKit.MultimodalAbstention.multipleSubjects": [
+      "case OpenMedKit.MultimodalAbstention.multipleSubjects"
+    ],
+    "OpenMedKit.MultimodalAbstention.noSubject": [
+      "case OpenMedKit.MultimodalAbstention.noSubject"
+    ],
     "OpenMedKit.MultimodalAbstention.phiUncertainty": [
       "case OpenMedKit.MultimodalAbstention.phiUncertainty"
     ],
@@ -4452,6 +4464,9 @@
     ],
     "OpenMedKit.MultimodalAbstention.speakerUncertainty": [
       "case OpenMedKit.MultimodalAbstention.speakerUncertainty"
+    ],
+    "OpenMedKit.MultimodalAbstention.subjectOutOfRange": [
+      "case OpenMedKit.MultimodalAbstention.subjectOutOfRange"
     ],
     "OpenMedKit.MultimodalAbstention.temporalInstability": [
       "case OpenMedKit.MultimodalAbstention.temporalInstability"

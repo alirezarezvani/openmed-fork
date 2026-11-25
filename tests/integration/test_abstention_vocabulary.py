@@ -64,3 +64,30 @@ def test_new_codes_round_trip_between_content_free_boundaries(stage, code) -> No
     assert restored.schema_version == "openmed.multimodal.provider_result.v2"
     assert restored.abstention_code.value == record.reason.value
     assert AbstentionRecord.from_json(record.to_json()) == record
+
+
+@pytest.mark.parametrize(
+    ("stage", "code"),
+    [
+        ("inference", "no_subject"),
+        ("inference", "multiple_subjects"),
+        ("post_process", "subject_out_of_range"),
+        ("post_process", "insufficient_joint_visibility"),
+        ("post_process", "insufficient_frame_coverage"),
+    ],
+)
+def test_pose_codes_round_trip_between_content_free_boundaries(stage, code) -> None:
+    record = AbstentionRecord(AbstentionStage(stage), AbstentionReason(code))
+    result = ProviderResultEnvelope(
+        provider_id="synthetic-provider",
+        model_id="synthetic-model",
+        input_digest="1" * 64,
+        outcome="abstention",
+        abstention_code=record.reason.value,
+        duration_ms=0,
+    )
+    restored = ProviderResultEnvelope.from_json(result.to_json())
+    assert record.schema_version == 3
+    assert restored.schema_version == "openmed.multimodal.provider_result.v3"
+    assert restored.abstention_code.value == record.reason.value
+    assert AbstentionRecord.from_json(record.to_json()) == record

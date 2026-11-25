@@ -112,12 +112,20 @@ public enum MultimodalAbstention: String, Sendable, CaseIterable {
     case languageUnsupported = "language_unsupported"
     case languageUncertain = "language_uncertain"
     case policyRefused = "policy_refused"
+    case noSubject = "no_subject"
+    case multipleSubjects = "multiple_subjects"
+    case subjectOutOfRange = "subject_out_of_range"
+    case insufficientJointVisibility = "insufficient_joint_visibility"
+    case insufficientFrameCoverage = "insufficient_frame_coverage"
 
     fileprivate var wireVersion: String {
         switch self {
         case .consentUnavailable, .consentWithdrawn, .captureInterrupted,
             .languageUnsupported, .languageUncertain, .policyRefused:
             return "openmed.multimodal.provider_result.v2"
+        case .noSubject, .multipleSubjects, .subjectOutOfRange,
+            .insufficientJointVisibility, .insufficientFrameCoverage:
+            return "openmed.multimodal.provider_result.v3"
         default:
             return "openmed.multimodal.provider_result.v1"
         }
@@ -519,7 +527,7 @@ private enum Wire {
     static func provider(_ p: [String: Any]) throws -> MultimodalProviderResult {
         _ = try object(p, "schema_version provider_id model_id input_digest output_digest outcome abstention_code duration_f64 count_metadata")
         let version = p["schema_version"] as? String
-        try check(version == "openmed.multimodal.provider_result.v1" || version == "openmed.multimodal.provider_result.v2", .schema)
+        try check(version == "openmed.multimodal.provider_result.v1" || version == "openmed.multimodal.provider_result.v2" || version == "openmed.multimodal.provider_result.v3", .schema)
         let providerID = try identifier(p["provider_id"])
         let modelID = try identifier(p["model_id"])
         let input = try hex(p["input_digest"])

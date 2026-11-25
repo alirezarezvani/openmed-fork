@@ -54,6 +54,7 @@ from openmed.multimodal.provider_result import (
     _REQUIRED_FIELDS,
     PROVIDER_RESULT_SCHEMA_VERSION,
     PROVIDER_RESULT_SCHEMA_VERSION_V2,
+    PROVIDER_RESULT_SCHEMA_VERSION_V3,
     ProviderAbstentionCode,
     ProviderResultEnvelope,
     ProviderResultError,
@@ -64,11 +65,11 @@ _SCHEMA_ID_PREFIX = "https://openmed.ai/schemas/multimodal/"
 _RENDERED_SCHEMA_DIGESTS = {
     "asset_manifest": "831088a1853e6113340d7112694252dc89994e501bd9d142ca64a49d06787f7b",
     "asset_batch": "ada986a0281a6b56e41b0d9eda1a91f677fc97de489ef08879d9408ed86ca605",
-    "abstention_record": "359f03f98bd66188afb0516294a424e4b4434945ab045fd6b6eeed944591566d",
-    "processing_summary": "7899719cafce0521c0c29c05a9e49627e538cd9c1c55f67732b93be276749168",
-    "provider_result": "aa0189b46e498b6b4c1ff67bd481ecd696e24b5651428c6b0f68da347db6e6fd",
+    "abstention_record": "2ad899ae91eee2c616e43bf1c134aefd11d04f89f3dd591aacc0b12e0872ab26",
+    "processing_summary": "ead7aaf5840c9e0f830b062efa70a801d59632004b18ac95c24d7c369da2978b",
+    "provider_result": "b35125f9ed10be904c224319c7f9b442d77d4bcca9549991f4daaa7a75baf4da",
 }
-_CATALOG_DIGEST = "74d2f2e3eb76ed87c521eeecc6f11597548c15ea2908418cfd8f6f7b6fae0d9e"
+_CATALOG_DIGEST = "6077d6331f6a3ee1a343d5d999b982a318cfed03f960841e24061808576e8975"
 
 
 def _validator(name: str) -> Draft202012Validator:
@@ -252,7 +253,13 @@ def test_schema_identifiers_are_unique_and_versioned() -> None:
         "provider_result": schemas.PROVIDER_RESULT_SCHEMA_ID,
     }
     assert len(set(identifiers.values())) == 5
-    assert all(value.endswith("-v1.schema.json") for value in identifiers.values())
+    assert {name: value.rsplit("-", 1)[1] for name, value in identifiers.items()} == {
+        "asset_manifest": "v1.schema.json",
+        "asset_batch": "v1.schema.json",
+        "abstention_record": "v2.schema.json",
+        "processing_summary": "v2.schema.json",
+        "provider_result": "v2.schema.json",
+    }
 
 
 def test_every_reference_targets_a_local_definition() -> None:
@@ -638,7 +645,7 @@ def test_abstention_schema_matches_the_python_contract() -> None:
     assert set(record["required"]) == {"schema_version", "stage", "reason"}
     assert set(record["properties"]) == {"schema_version", "stage", "reason"}
     assert record["properties"]["schema_version"] == {
-        "enum": [ABSTENTION_SCHEMA_VERSION, 2]
+        "enum": [ABSTENTION_SCHEMA_VERSION, 2, 3]
     }
     assert record["properties"]["stage"]["enum"] == [
         stage.value for stage in AbstentionStage
@@ -854,7 +861,11 @@ def test_provider_result_schema_matches_the_python_contract() -> None:
         "guard_metadata",
     }
     assert properties["schema_version"] == {
-        "enum": [PROVIDER_RESULT_SCHEMA_VERSION, PROVIDER_RESULT_SCHEMA_VERSION_V2]
+        "enum": [
+            PROVIDER_RESULT_SCHEMA_VERSION,
+            PROVIDER_RESULT_SCHEMA_VERSION_V2,
+            PROVIDER_RESULT_SCHEMA_VERSION_V3,
+        ]
     }
     assert properties["provider_id"] == {"$ref": "#/$defs/providerIdentifier"}
     assert properties["model_id"] == {"$ref": "#/$defs/providerIdentifier"}
@@ -905,12 +916,17 @@ def test_provider_versions_and_generated_text_guard_match_loader() -> None:
         )
         payload = envelope.to_dict()
         assert validator.is_valid(payload)
-        versions = [PROVIDER_RESULT_SCHEMA_VERSION, PROVIDER_RESULT_SCHEMA_VERSION_V2]
+        versions = [
+            PROVIDER_RESULT_SCHEMA_VERSION,
+            PROVIDER_RESULT_SCHEMA_VERSION_V2,
+            PROVIDER_RESULT_SCHEMA_VERSION_V3,
+        ]
         versions.remove(envelope.schema_version)
-        wrong_version = {**payload, "schema_version": versions[0]}
-        assert not validator.is_valid(wrong_version)
-        with pytest.raises(ProviderResultError):
-            ProviderResultEnvelope.from_dict(wrong_version)
+        for version in versions:
+            wrong_version = {**payload, "schema_version": version}
+            assert not validator.is_valid(wrong_version)
+            with pytest.raises(ProviderResultError):
+                ProviderResultEnvelope.from_dict(wrong_version)
 
     guard = {
         "decision": "redact",

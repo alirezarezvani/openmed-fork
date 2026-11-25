@@ -452,6 +452,11 @@ def fixture():
             "openmed.multimodal.provider_result.v1",
         ),
         ("provider_abstention_resource_limit", "openmed.multimodal.provider_result.v2"),
+        ("provider_abstention_no_subject", "openmed.multimodal.provider_result.v2"),
+        (
+            "provider_abstention_policy_refused",
+            "openmed.multimodal.provider_result.v3",
+        ),
     ):
         original = next(row for row in cases if row["id"] == case_id)
         reject(

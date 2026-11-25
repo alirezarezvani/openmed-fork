@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add five pose abstention reasons (`no_subject`, `multiple_subjects`,
+  `subject_out_of_range`, `insufficient_joint_visibility`,
+  `insufficient_frame_coverage`) as wire version 3, valid only at the
+  `inference` and `post_process` stages, mirrored in `ProviderAbstentionCode`
+  (`openmed.multimodal.provider_result.v3`) and Swift `MultimodalAbstention`
+  through the shared parity fixture. Existing v1 and v2 records keep their exact
+  bytes. The changed abstention, processing-summary and provider JSON Schema
+  identifiers move to the `-v2` suffix (#4678).
+
 - Add a standard-library synthetic side-view walker fixture for pose and gait
   tests: seeded joint sequences with heel-strike, toe-off, cadence, step-time and
   double-support truth, asymmetry, far-leg occlusion, joint jitter and a

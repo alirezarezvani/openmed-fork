@@ -27,6 +27,7 @@ from .provenance.clock_alignment import (
 from .provider_result import (
     PROVIDER_RESULT_SCHEMA_VERSION,
     PROVIDER_RESULT_SCHEMA_VERSION_V2,
+    PROVIDER_RESULT_SCHEMA_VERSION_V3,
     ProviderAbstentionCode,
     ProviderResultEnvelope,
 )
@@ -258,7 +259,12 @@ def _provider(payload: dict[str, Any]) -> None:
     data["duration_ms"] = _number(data.pop("duration_f64"), maximum=86400000)
     version = data["schema_version"]
     _check(
-        version in (PROVIDER_RESULT_SCHEMA_VERSION, PROVIDER_RESULT_SCHEMA_VERSION_V2),
+        version
+        in (
+            PROVIDER_RESULT_SCHEMA_VERSION,
+            PROVIDER_RESULT_SCHEMA_VERSION_V2,
+            PROVIDER_RESULT_SCHEMA_VERSION_V3,
+        ),
         ContractRefusal.SCHEMA,
     )
     code = data["abstention_code"]

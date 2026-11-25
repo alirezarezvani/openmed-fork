@@ -22,6 +22,7 @@ __all__ = [
     "MAX_PROVIDER_RESULT_JSON_BYTES",
     "PROVIDER_RESULT_SCHEMA_VERSION",
     "PROVIDER_RESULT_SCHEMA_VERSION_V2",
+    "PROVIDER_RESULT_SCHEMA_VERSION_V3",
     "ProviderAbstentionCode",
     "ProviderResultEnvelope",
     "ProviderResultError",
@@ -30,6 +31,7 @@ __all__ = [
 
 PROVIDER_RESULT_SCHEMA_VERSION: Final = "openmed.multimodal.provider_result.v1"
 PROVIDER_RESULT_SCHEMA_VERSION_V2: Final = "openmed.multimodal.provider_result.v2"
+PROVIDER_RESULT_SCHEMA_VERSION_V3: Final = "openmed.multimodal.provider_result.v3"
 MAX_PROVIDER_RESULT_JSON_BYTES: Final = 64 * 1024
 
 _MAX_COUNT: Final = (1 << 63) - 1
@@ -96,10 +98,18 @@ class ProviderAbstentionCode(str, Enum):
     LANGUAGE_UNSUPPORTED = AbstentionReason.LANGUAGE_UNSUPPORTED.value
     LANGUAGE_UNCERTAIN = AbstentionReason.LANGUAGE_UNCERTAIN.value
     POLICY_REFUSED = AbstentionReason.POLICY_REFUSED.value
+    NO_SUBJECT = AbstentionReason.NO_SUBJECT.value
+    MULTIPLE_SUBJECTS = AbstentionReason.MULTIPLE_SUBJECTS.value
+    SUBJECT_OUT_OF_RANGE = AbstentionReason.SUBJECT_OUT_OF_RANGE.value
+    INSUFFICIENT_JOINT_VISIBILITY = AbstentionReason.INSUFFICIENT_JOINT_VISIBILITY.value
+    INSUFFICIENT_FRAME_COVERAGE = AbstentionReason.INSUFFICIENT_FRAME_COVERAGE.value
 
     @property
     def _wire_version(self) -> str:
-        if AbstentionReason(self.value).schema_version == 2:
+        version = AbstentionReason(self.value).schema_version
+        if version == 3:
+            return PROVIDER_RESULT_SCHEMA_VERSION_V3
+        if version == 2:
             return PROVIDER_RESULT_SCHEMA_VERSION_V2
         return PROVIDER_RESULT_SCHEMA_VERSION
 
@@ -117,8 +127,9 @@ class ProviderResultEnvelope:
         count_metadata: Closed, bounded mapping of aggregate counters.
         output_digest: Required only for a successful result.
         abstention_code: Required only for an abstention result.
-        schema_version: Omit to select v2 only for new abstention codes, otherwise
-            v1. An explicit identifier must match that required version.
+        schema_version: Omit to select v2 for consent, capture, language and
+            policy abstention codes, v3 for pose subject and coverage codes, and
+            v1 otherwise. An explicit identifier must match that required version.
         guard_metadata: Optional closed generated-text release decision and digests.
     """
 

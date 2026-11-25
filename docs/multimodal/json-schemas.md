@@ -49,12 +49,15 @@ assert set(catalog) == {
 | --- | --- | --- |
 | `asset_manifest` | `https://openmed.ai/schemas/multimodal/asset-manifest-v1.schema.json` | `AssetManifest` |
 | `asset_batch` | `https://openmed.ai/schemas/multimodal/asset-batch-v1.schema.json` | `AssetBatch` |
-| `abstention_record` | `https://openmed.ai/schemas/multimodal/abstention-record-v1.schema.json` | `AbstentionRecord` |
-| `processing_summary` | `https://openmed.ai/schemas/multimodal/processing-summary-v1.schema.json` | `ProcessingSummary` |
-| `provider_result` | `https://openmed.ai/schemas/multimodal/provider-result-v1.schema.json` | `ProviderResultEnvelope` |
+| `abstention_record` | `https://openmed.ai/schemas/multimodal/abstention-record-v2.schema.json` | `AbstentionRecord` |
+| `processing_summary` | `https://openmed.ai/schemas/multimodal/processing-summary-v2.schema.json` | `ProcessingSummary` |
+| `provider_result` | `https://openmed.ai/schemas/multimodal/provider-result-v2.schema.json` | `ProviderResultEnvelope` |
 
-The abstention and provider documents validate both supported wire versions.
-Version 2 is required for the consent, capture, language and policy reasons.
+The abstention and provider documents validate every supported wire version.
+Version 2 is required for the consent, capture, language and policy reasons, and
+version 3 for the pose subject and coverage reasons. Adding the version 3 reasons
+changed the abstention, processing-summary and provider documents, so their
+identifiers moved from the `-v1` to the `-v2` suffix.
 Provider guard metadata validates the release decision and digest fields
 together with the outcome.
 

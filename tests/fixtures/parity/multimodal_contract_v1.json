@@ -341,6 +341,56 @@
       }
     },
     {
+      "id": "provider_abstention_no_subject",
+      "wire": "{\"evidence_digest\":\"6ad153a5aa90234b6b2a52a7de238df98c0f51a3e6e6a9227f8465bbf532484e\",\"kind\":\"provider\",\"payload\":{\"abstention_code\":\"no_subject\",\"count_metadata\":{\"input_items\":1,\"output_items\":0},\"duration_f64\":\"3fb999999999999a\",\"input_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"model_id\":\"synthetic-model\",\"outcome\":\"abstention\",\"output_digest\":null,\"provider_id\":\"synthetic-adapter\",\"schema_version\":\"openmed.multimodal.provider_result.v3\"},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
+      "digest": "6ad153a5aa90234b6b2a52a7de238df98c0f51a3e6e6a9227f8465bbf532484e",
+      "expected": {
+        "kind": "provider",
+        "outcome": "abstention",
+        "reason": "no_subject"
+      }
+    },
+    {
+      "id": "provider_abstention_multiple_subjects",
+      "wire": "{\"evidence_digest\":\"3e5cefce0f6167b1bc4212f9c58d623c25c98cfaf53d1462f74800e055282a1c\",\"kind\":\"provider\",\"payload\":{\"abstention_code\":\"multiple_subjects\",\"count_metadata\":{\"input_items\":1,\"output_items\":0},\"duration_f64\":\"3fb999999999999a\",\"input_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"model_id\":\"synthetic-model\",\"outcome\":\"abstention\",\"output_digest\":null,\"provider_id\":\"synthetic-adapter\",\"schema_version\":\"openmed.multimodal.provider_result.v3\"},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
+      "digest": "3e5cefce0f6167b1bc4212f9c58d623c25c98cfaf53d1462f74800e055282a1c",
+      "expected": {
+        "kind": "provider",
+        "outcome": "abstention",
+        "reason": "multiple_subjects"
+      }
+    },
+    {
+      "id": "provider_abstention_subject_out_of_range",
+      "wire": "{\"evidence_digest\":\"c63e1f464504f83d2a23a41ad0d6637973c5052920c0a7644a2fd9c83d598932\",\"kind\":\"provider\",\"payload\":{\"abstention_code\":\"subject_out_of_range\",\"count_metadata\":{\"input_items\":1,\"output_items\":0},\"duration_f64\":\"3fb999999999999a\",\"input_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"model_id\":\"synthetic-model\",\"outcome\":\"abstention\",\"output_digest\":null,\"provider_id\":\"synthetic-adapter\",\"schema_version\":\"openmed.multimodal.provider_result.v3\"},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
+      "digest": "c63e1f464504f83d2a23a41ad0d6637973c5052920c0a7644a2fd9c83d598932",
+      "expected": {
+        "kind": "provider",
+        "outcome": "abstention",
+        "reason": "subject_out_of_range"
+      }
+    },
+    {
+      "id": "provider_abstention_insufficient_joint_visibility",
+      "wire": "{\"evidence_digest\":\"6ee7d1bb1c39225a9ad69f887b93b5717b0f6076ae1cda35336523c2f73158fb\",\"kind\":\"provider\",\"payload\":{\"abstention_code\":\"insufficient_joint_visibility\",\"count_metadata\":{\"input_items\":1,\"output_items\":0},\"duration_f64\":\"3fb999999999999a\",\"input_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"model_id\":\"synthetic-model\",\"outcome\":\"abstention\",\"output_digest\":null,\"provider_id\":\"synthetic-adapter\",\"schema_version\":\"openmed.multimodal.provider_result.v3\"},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
+      "digest": "6ee7d1bb1c39225a9ad69f887b93b5717b0f6076ae1cda35336523c2f73158fb",
+      "expected": {
+        "kind": "provider",
+        "outcome": "abstention",
+        "reason": "insufficient_joint_visibility"
+      }
+    },
+    {
+      "id": "provider_abstention_insufficient_frame_coverage",
+      "wire": "{\"evidence_digest\":\"a75aecb5fec2616d25899f138945cf246ffd111487a2aeba101335dc4d3a04d8\",\"kind\":\"provider\",\"payload\":{\"abstention_code\":\"insufficient_frame_coverage\",\"count_metadata\":{\"input_items\":1,\"output_items\":0},\"duration_f64\":\"3fb999999999999a\",\"input_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"model_id\":\"synthetic-model\",\"outcome\":\"abstention\",\"output_digest\":null,\"provider_id\":\"synthetic-adapter\",\"schema_version\":\"openmed.multimodal.provider_result.v3\"},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
+      "digest": "a75aecb5fec2616d25899f138945cf246ffd111487a2aeba101335dc4d3a04d8",
+      "expected": {
+        "kind": "provider",
+        "outcome": "abstention",
+        "reason": "insufficient_frame_coverage"
+      }
+    },
+    {
       "id": "provider_provider_unavailable_none",
       "wire": "{\"evidence_digest\":\"1e4f80b322ccb8f560a68c139e44f74258288baf5a1efb9077ed64464b3551c1\",\"kind\":\"provider\",\"payload\":{\"abstention_code\":null,\"count_metadata\":{\"input_items\":1,\"output_items\":0},\"duration_f64\":\"3fb999999999999a\",\"input_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"model_id\":\"synthetic-model\",\"outcome\":\"provider_unavailable\",\"output_digest\":null,\"provider_id\":\"synthetic-adapter\",\"schema_version\":\"openmed.multimodal.provider_result.v1\"},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
       "digest": "1e4f80b322ccb8f560a68c139e44f74258288baf5a1efb9077ed64464b3551c1",
@@ -499,6 +549,16 @@
       "reason": "unsupported_multimodal_schema"
     },
     {
+      "id": "provider_abstention_no_subject_wrong_version",
+      "wire": "{\"evidence_digest\":\"acf058ce3031d7efa9942981562540e601858fed158baa95adaf3b31fe9da7ec\",\"kind\":\"provider\",\"payload\":{\"abstention_code\":\"no_subject\",\"count_metadata\":{\"input_items\":1,\"output_items\":0},\"duration_f64\":\"3fb999999999999a\",\"input_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"model_id\":\"synthetic-model\",\"outcome\":\"abstention\",\"output_digest\":null,\"provider_id\":\"synthetic-adapter\",\"schema_version\":\"openmed.multimodal.provider_result.v2\"},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
+      "reason": "unsupported_multimodal_schema"
+    },
+    {
+      "id": "provider_abstention_policy_refused_wrong_version",
+      "wire": "{\"evidence_digest\":\"6a69908551d7db73c2c23982ce7e77660afc3aa830fc97bc11cf4a426e6543ec\",\"kind\":\"provider\",\"payload\":{\"abstention_code\":\"policy_refused\",\"count_metadata\":{\"input_items\":1,\"output_items\":0},\"duration_f64\":\"3fb999999999999a\",\"input_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"model_id\":\"synthetic-model\",\"outcome\":\"abstention\",\"output_digest\":null,\"provider_id\":\"synthetic-adapter\",\"schema_version\":\"openmed.multimodal.provider_result.v3\"},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
+      "reason": "unsupported_multimodal_schema"
+    },
+    {
       "id": "duplicate_key",
       "wire": "{\"kind\":\"asset\",\"evidence_digest\":\"a7403230ffaafe1565544e2caca5acde7bd72b36b28a1bf27408dd3121bb0762\",\"kind\":\"asset\",\"payload\":{\"asset_ref\":\"6f252e1d85c9df6308cbb574aa764fcb\",\"byte_size\":128,\"duration_f64\":null,\"frames\":null,\"height\":50,\"manifest_digest\":\"020a57cb4958a0fed7a2cc3d0acf023ef69f9ccbd287ca2d0fba11ab2bb8b7d0\",\"media_type\":\"image/png\",\"pages\":null,\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"source_schema\":1,\"width\":100},\"schema_version\":\"openmed.multimodal.apple.v1\"}",
       "reason": "invalid_multimodal_contract"
@@ -533,7 +593,12 @@
     "capture_interrupted",
     "language_unsupported",
     "language_uncertain",
-    "policy_refused"
+    "policy_refused",
+    "no_subject",
+    "multiple_subjects",
+    "subject_out_of_range",
+    "insufficient_joint_visibility",
+    "insufficient_frame_coverage"
   ],
   "clock_reasons": [
     "insufficient-anchors",
